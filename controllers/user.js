@@ -78,7 +78,7 @@ const login = (req, res) => {
 
     // Buscar el base de datos si existe
     User.findOne({email: params.email})
-        .select({"password": 0})
+        //.select({"password": 0})
         .then((user) => {
             // si no existe el usuario
             if(!user){
@@ -88,11 +88,29 @@ const login = (req, res) => {
                 });
             }
 
+            // Comprobar contraseña
+            const pwd = bcrypt.compareSync(params.password, user.password);
 
+            if(!pwd){
+                return res.status(400).send({
+                    status: "error",
+                    message: "No te has identificado correctamente"
+                });
+            }
+
+            // Conseguir Token
+            const token = false;
+
+            // Devolver Datos del Usuario
             return res.status(200).json({
                 status: "success",
                 mensaje: "Acción de login",
-                user
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    nick: user.nick
+                },
+                token
               });
         });
 
