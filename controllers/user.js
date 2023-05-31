@@ -1,6 +1,14 @@
 // Importar dependencias y modulos
 const bcrypt = require("bcrypt");
+
+// Importar modelos
 const User = require("../models/user");
+
+// Importar servicios
+const jwt = require("../services/jwt");
+
+
+
 
 // Registro de usuarios
 const register = async (req, res) => {
@@ -99,12 +107,12 @@ const login = (req, res) => {
             }
 
             // Conseguir Token
-            const token = false;
+            const token = jwt.createToken(user);
 
             // Devolver Datos del Usuario
             return res.status(200).json({
                 status: "success",
-                mensaje: "Acción de login",
+                mensaje: "Identificado correctamente",
                 user: {
                     id: user._id,
                     name: user.name,
