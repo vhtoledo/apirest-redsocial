@@ -64,7 +64,42 @@ const register = async (req, res) => {
     }
 }
 
+const login = (req, res) => {
+
+    // Recoger parametros body
+    let params = req.body
+
+    if (!params.email || !params.password){
+        return res.status(400).send({
+            status: "error",
+            message: "Faltan datos por enviar"
+        })
+    }
+
+    // Buscar el base de datos si existe
+    User.findOne({email: params.email})
+        .select({"password": 0})
+        .then((user) => {
+            // si no existe el usuario
+            if(!user){
+                return res.status(404).send({
+                    status: "error",
+                    mensaje: "No se ha encontrado el usuario",
+                });
+            }
+
+
+            return res.status(200).json({
+                status: "success",
+                mensaje: "Acción de login",
+                user
+              });
+        });
+
+}
+
 // Exportar acciones
 module.exports = {
-    register
+    register,
+    login
 }
