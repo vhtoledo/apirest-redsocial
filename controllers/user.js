@@ -8,7 +8,13 @@ const User = require("../models/user");
 const jwt = require("../services/jwt");
 
 
+const pruebaUser = (req, res) => {
 
+    return res.status(200).send({
+        status: "success",
+        messague: "El usuario ya existe"
+    });
+}
 
 // Registro de usuarios
 const register = async (req, res) => {
@@ -126,6 +132,7 @@ const login = (req, res) => {
 
 // Exportar acciones
 module.exports = {
+    pruebaUser,
     register,
     login
 }
