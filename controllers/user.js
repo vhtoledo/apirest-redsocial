@@ -168,7 +168,6 @@ const list = (req, res) => {
                 });
             }
 
-
             // Devolver el resultado (posteriormente info follow)
             return res.status(200).json({
                 status: "success",
@@ -182,11 +181,75 @@ const list = (req, res) => {
 
 }
 
+const update = async (req, res) => {
+    // Recoger info del usuario actualizar
+    let userIdentity = req.user;
+    let userToUpdate = req.body;
+
+    // Eliminar campos sobrantes
+    delete userToUpdate.iat;
+    delete userToUpdate.exp;
+    delete userToUpdate.role;
+    delete userToUpdate.image;
+
+    // Control usuarios duplicados
+    try {
+        const users = await User.find({
+            $or: [
+                { email: userToUpdate.email.toLowerCase() },
+                { nick: userToUpdate.nick.toLowerCase() }
+            ]
+        }).exec();
+
+        let userIsset = false;
+        users.forEach(user => {
+            if(user && user._id != userIdentity.id) userIsset = true;
+        })
+ 
+        if (userIsset) {
+            return res.status(200).send({
+                status: "success",
+                messague: "El usuario ya existe"
+            });
+        }
+
+        // Cifrar la contraseña
+        if (userToUpdate.password) {
+            let pwd = await bcrypt.hash(userToUpdate.password, 10); 
+            userToUpdate.password = pwd;
+        }
+
+        // Buscar y actualizar
+        User.findByIdAndUpdate(userIdentity.id, userToUpdate, {new:true})
+            .then((userUpdate) => {
+                if(!userUpdate) {
+                    return res.status(404).send({
+                        status: "error",
+                        message: "No se a podido actualizar"
+                    });
+                }
+
+                return res.status(200).send({
+                    status:"success",
+                    message: "Metodo actualizar usuario",
+                    user: userUpdate
+                });
+            })
+
+    } catch (error) {
+        return res.status(500).json({
+            status: "Error",
+            messague: "Error en la consulta de usuarios"
+        });
+    }
+}
+
 
 // Exportar acciones
 module.exports = {
     register,
     login,
     profile,
-    list
+    list,
+    update
 }
