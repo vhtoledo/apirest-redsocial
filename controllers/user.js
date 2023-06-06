@@ -2,6 +2,7 @@
 const bcrypt = require("bcrypt");
 const mongoosePagination = require("mongoose-pagination");
 const fs = require("fs");
+const path = require("path");
 
 // Importar modelos
 const User = require("../models/user");
@@ -293,7 +294,30 @@ const upload = (req, res) => {
                 file: req.file,
             });
         });
+}
 
+// Metodo mostrar avatar
+const avatar = (req, res) => {
+
+    // Sacar el parametro de la url
+    const file = req.params.file;
+
+    // Montar el path real de la imagen
+    const filePath = "./uploads/avatars/"+file;
+
+    // Comprobar que existe
+    fs.stat(filePath, (error, exists) => {
+
+        if(!exists){
+            return res.status(404).send({
+                status: "error", 
+                message: "No existe la imagen"
+            });
+        } 
+        
+        // Devolver un file
+        return res.sendFile(path.resolve(filePath));
+    });
 
 }
 
@@ -305,5 +329,6 @@ module.exports = {
     profile,
     list,
     update,
-    upload
+    upload,
+    avatar
 }
