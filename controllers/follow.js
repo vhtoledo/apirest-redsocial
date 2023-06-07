@@ -44,6 +44,32 @@ const save = (req, res) => {
 }
 
 // Acción de borrar un follow (acción dejar de seguir)
+const unfollow = (req, res) => {
+
+    // Recoger el id del usuario identificado
+    const userId = req.user.id;
+
+    // Recoger el id del usuario que sigo y quiero dejar de seguir
+    const followedId = req.params.id;
+
+    // Find de las coincidencias y hacer remove
+    Follow.find({"user": userId,"followed": followedId})
+          .findOneAndRemove()
+          .then((followDelete) => {
+            if(!followDelete){
+                return res.status(404).send({
+                    status: "error",
+                    message: "No has dejado de seguir a nadie"
+                });
+            }
+            return res.status(200).send({
+                status: "success",
+                message: "Follow eliminado correctamente",
+
+            });
+          })
+
+}
 
 // Acción de listado de usuarios que estoy siguiendo
 
@@ -52,5 +78,6 @@ const save = (req, res) => {
 // Exportar acciones
 module.exports = {
     pruebaFollow,
-    save
+    save, 
+    unfollow
 }
