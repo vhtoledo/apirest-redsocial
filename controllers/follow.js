@@ -10,6 +10,38 @@ const pruebaFollow = (req, res) => {
 }
 
 // Acción de guardar un follow (acción seguir)
+const save = (req, res) => {
+
+    // Conseguir datos por body
+    const params = req.body;
+
+    // Sacar el id del usuario identificado
+    const identity = req.user;
+
+    // Crear objeto con modelo follow
+    let userToFollow = new Follow({
+        user: identity.id,
+        followed: params.followed
+    });
+
+    // Guardar objeto en base de datos
+    userToFollow.save()
+                .then((followStored) => {
+                    if(!followStored) {
+                        return res.status(404).send({
+                            status: "error",
+                            message: "No se a podido seguir al usuario"
+                        });
+                    }
+
+                    return res.status(200).send({
+                        status: "success",
+                        identity: req.user,
+                        follow: followStored
+                    });
+                })
+
+}
 
 // Acción de borrar un follow (acción dejar de seguir)
 
@@ -19,5 +51,6 @@ const pruebaFollow = (req, res) => {
 
 // Exportar acciones
 module.exports = {
-    pruebaFollow
+    pruebaFollow,
+    save
 }

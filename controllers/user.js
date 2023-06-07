@@ -222,7 +222,7 @@ const update = async (req, res) => {
         }
 
         // Buscar y actualizar
-        User.findByIdAndUpdate(userIdentity.id, userToUpdate, {new:true})
+        User.findByIdAndUpdate({_id: userIdentity.id}, userToUpdate, {new:true})
             .then((userUpdate) => {
                 if(!userUpdate) {
                     return res.status(404).send({
@@ -278,7 +278,7 @@ const upload = (req, res) => {
     }
 
     // Si es correcta, guardar imagen en base de datos
-    User.findByIdAndUpdate(req.user.id, {image: req.file.filename}, {new:true})
+    User.findByIdAndUpdate({_id: req.user.id}, {image: req.file.filename}, {new:true})
         .then((userUpdate) => {
             if(!userUpdate) {
                 return res.status(500).send({
