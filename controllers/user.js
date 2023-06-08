@@ -167,13 +167,16 @@ const list = (req, res) => {
     User.find()
         .sort('_id')
         .paginate(page, itemsPerPage)
-        .then((users, total) => {
+        .then(async(users, total) => {
             if(!users) {
                 return res.status(404).send({
                     status: "error",
                     message: "No hay usuarios disponibles"
                 });
             }
+
+            // Sacar un array de ids de los usuarios que me siguen y de los que sigo
+            let followsUserIds = await followService.followsUserIds(req.user.id);
 
             // Devolver el resultado (posteriormente info follow)
             return res.status(200).json({
@@ -182,7 +185,9 @@ const list = (req, res) => {
                 page,
                 itemsPerPage,
                 total,
-                page: Math.ceil(total/itemsPerPage)
+                page: Math.ceil(total/itemsPerPage),
+                user_following: followsUserIds.following,
+                user_follow_me: followsUserIds.followers
             });
         });
 

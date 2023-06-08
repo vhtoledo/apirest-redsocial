@@ -106,6 +106,8 @@ const following = (req, res) => {
                 });
             }
 
+            //Listado de usuarios
+            // Sacar un array de ids de los usuarios que me siguen y de los que sigo
             let followsUserIds = await followService.followsUserIds(req.user.id);
 
             return res.status(200).send({
