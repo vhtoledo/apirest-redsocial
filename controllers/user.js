@@ -9,6 +9,7 @@ const User = require("../models/user");
 
 // Importar servicios
 const jwt = require("../services/jwt");
+const followService = require("../services/followService");
 
 
 // Registro de usuarios
@@ -131,7 +132,7 @@ const profile = (req, res) => {
     // Consulta para sacar los datos del usuario
     User.findById(id)
         .select({password: 0, role: 0})
-        .then((userProfile) => {
+        .then(async(userProfile) => {
             if(!userProfile){
                 return res.status(404).send({
                     status: "error",
@@ -139,11 +140,15 @@ const profile = (req, res) => {
                 })
             }
 
+            // Info de seguimiento
+            const followInfo = await followService.followThisUser(req.user.id, id);
+
             // Devolver el restulado 
-            // Posteriormente: devolver informacion follows
             return res.status(200).json({
                 status: "success",
-                user: userProfile
+                user: userProfile,
+                following: followInfo.following,
+                follower: followInfo.follower
             });
         });
 }
