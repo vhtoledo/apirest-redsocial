@@ -2,6 +2,9 @@
 const Follow = require("../models/follow");
 const User = require("../models/user");
 
+// Importar servicio
+const followService = require("../services/followService");
+
 // Importar dependencias 
 const mongoosePaginate = require("mongoose-pagination");
 
@@ -95,7 +98,7 @@ const following = (req, res) => {
     Follow.find({"user": userId})
           .populate("user followed", "-password -role -__v")
           .paginate(page, itemsPerPage)
-          .then((follows) => {
+          .then(async(follows) => {
             if(!follows){
                 return res.status(404).send({
                     status: "error",
@@ -103,12 +106,14 @@ const following = (req, res) => {
                 });
             }
 
-            
+            let followsUserIds = await followService.followsUserIds(req.user.id);
 
             return res.status(200).send({
                 status: "success",
                 message: "Listado siguiendo",
-                follows
+                follows,
+                user_following: followsUserIds.following,
+                user_follow_me: followsUserIds.followers
             });
           })
 
