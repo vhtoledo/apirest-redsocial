@@ -1,3 +1,4 @@
+const Publication = require("../models/publication");
 
 // Acciones de prueba
 const pruebaPublication = (req, res) => {
