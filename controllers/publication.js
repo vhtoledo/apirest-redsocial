@@ -1,3 +1,8 @@
+// Importar Modulos
+const fs = require("fs");
+const path = require("path");
+
+// Importar Modelos
 const Publication = require("../models/publication");
 
 // Acciones de prueba
@@ -178,7 +183,30 @@ const upload = (req, res) => {
         });
 }
 
+// Devolver archivos multimedia imagenes
+const media = (req, res) => {
 
+    // Sacar el parametro de la url
+    const file = req.params.file;
+
+    // Montar el path real de la imagen
+    const filePath = "./uploads/publications/"+file;
+
+    // Comprobar que existe
+    fs.stat(filePath, (error, exists) => {
+
+        if(!exists){
+            return res.status(404).send({
+                status: "error", 
+                message: "No existe la publicacion"
+            });
+        } 
+        
+        // Devolver un file
+        return res.sendFile(path.resolve(filePath));
+    });
+
+}
 
 // Exportar acciones
 module.exports = {
@@ -187,5 +215,6 @@ module.exports = {
     detail,
     remove,
     user,
-    upload
+    upload,
+    media
 }
