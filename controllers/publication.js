@@ -32,7 +32,7 @@ const save = (req, res) => {
 
                     return res.status(200).send({
                         status: "success",
-                        message: "Publicación guardad",
+                        message: "Publicación guardada",
                         publicationStore
                     });
                   });
@@ -89,10 +89,48 @@ const remove = (req, res) => {
 
 }
 
+// Listar publicaciones de un usuario
+const user = (req, res) => {
+
+    // Sacar el id de usuario
+    const userId = req.params.id;
+
+    // Controlar pagina
+    let page = 1;
+
+    if(req.params.page) page = req.params.page
+
+    const itemsPerPage = 5;
+
+    // Find, populate, ordenar, paginar
+    Publication.find({"user": userId})
+               .sort("-created_at")
+               .populate('user', '-password -__v -role')
+               .paginate(page,itemsPerPage)
+               .then((publications, total) => {
+                 if(!publications && !total){
+                    return res.status(404).send({
+                        status: "error",
+                        message: "No hay publicaciones para mostrar"
+                    });
+                 }
+                 return res.status(200).send({
+                     status: "success",
+                     message: "Publicaciones del perfil de un usuario",
+                     page,
+                     total,
+                     publications
+               });
+               })
+
+
+}
+
 // Exportar acciones
 module.exports = {
     pruebaPublication,
     save,
     detail,
-    remove
+    remove,
+    user
 }
