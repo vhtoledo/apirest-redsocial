@@ -123,8 +123,62 @@ const user = (req, res) => {
                });
                })
 
-
 }
+
+// Subir Ficheros
+const upload = (req, res) => {
+
+    // Sacar publication id
+    const publicationId = req.params.id;
+
+    // Recoger el fichero de imagen y comprobar que existe
+    if(!req.file){
+        return res.status(404).send({
+            status: "error",
+            message: "Petición no incluye la imagen"
+        });
+    }
+
+    // Conseguir el nombre del archivo
+    let image = req.file.originalname;
+
+    // Sacar la extension del archivo
+    const imageSplit = image.split("\.");
+    const extension = imageSplit[1];
+    
+    // Comprobar extension
+    if(extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "gif"){
+
+        // Borrar archivo subido
+        const filePath = req.file.path;
+        const fileDeleted = fs.unlinkSync(filePath);
+        // Devolver respuesta negativa
+        return res.status(400).send({
+            status: "error",
+            message: "Extensión del fichero inválida"
+        });
+    }
+
+    // Si es correcta, guardar imagen en base de datos
+    Publication.findByIdAndUpdate({ "user": req.user.id, "_id": publicationId }, { file: req.file.filename }, {new:true})
+        .then((publicationUpdate) => {
+            if(!publicationUpdate) {
+                return res.status(500).send({
+                    status: "error",
+                    message: "Error en la subida de publicación"
+                });
+            }
+
+
+            return res.status(200).send({
+                status:"success",
+                publication: publicationUpdate,
+                file: req.file,
+            });
+        });
+}
+
+
 
 // Exportar acciones
 module.exports = {
@@ -132,5 +186,6 @@ module.exports = {
     save,
     detail,
     remove,
-    user
+    user,
+    upload
 }
