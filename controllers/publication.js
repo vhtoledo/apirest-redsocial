@@ -39,6 +39,7 @@ const save = (req, res) => {
 
 }
 
+// Metodo mostrar publicacion
 const detail = (req, res) => {
 
     // Sacar id de publicacion de la url
@@ -63,9 +64,35 @@ const detail = (req, res) => {
     });
 }
 
+// Eliminar publicacion
+const remove = (req, res) => {
+
+    // Sacar el id de la publicacion a eliminar
+    const publicacionId = req.params.id;
+
+    // Find y remove
+    Publication.find({"user": req.user.id, "_id": publicacionId })
+               .findOneAndRemove()
+               .then((publicacionRemove) => {
+                if(!publicacionRemove){
+                    return res.status(404).send({
+                        status: "error",
+                        message: "No se ha eliminado la publicacion"
+                    });
+                }
+                return res.status(200).send({
+                    status: "success",
+                    message: "Publicacion eliminada correctamente",
+                    publication: publicacionRemove
+              });
+            });
+
+}
+
 // Exportar acciones
 module.exports = {
     pruebaPublication,
     save,
-    detail
+    detail,
+    remove
 }
