@@ -8,12 +8,6 @@ const followService = require("../services/followService");
 // Importar dependencias 
 const mongoosePaginate = require("mongoose-pagination");
 
-// Acciones de prueba
-const pruebaFollow = (req, res) => {
-    return res.status(200).send({
-        message: "Mensaje enviado desde: controllers/follow.js"
-    });
-}
 
 // Acción de guardar un follow (acción seguir)
 const save = (req, res) => {
@@ -164,7 +158,6 @@ const followers = (req, res) => {
 
 // Exportar acciones
 module.exports = {
-    pruebaFollow,
     save, 
     unfollow,
     following,

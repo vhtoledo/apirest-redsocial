@@ -12,6 +12,8 @@ const Follow = require("../models/follow");
 // Importar servicios
 const jwt = require("../services/jwt");
 const followService = require("../services/followService");
+const validate = require("../helpers/validate");
+
 
 
 // Registro de usuarios
@@ -25,6 +27,16 @@ const register = async (req, res) => {
         return res.status(400).json({
             status: "error",
             message: "Faltan datos por enviar"
+        });
+    }
+
+    // Validaciones
+    try {
+        validate(params);
+    } catch (error) {
+        return res.status(400).json({
+            status: "error",
+            message: "Validación no superada"
         });
     }
 

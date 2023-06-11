@@ -8,13 +8,6 @@ const Publication = require("../models/publication");
 // Importar servicios
 const followService = require("../services/followService");
 
-// Acciones de prueba
-const pruebaPublication = (req, res) => {
-    return res.status(200).send({
-        message: "Mensaje enviado desde: controllers/publication.js"
-    });
-}
-
 // Guardar publicacion
 const save = (req, res) => {
 
@@ -264,7 +257,6 @@ const feed = async(req, res) => {
 
 // Exportar acciones
 module.exports = {
-    pruebaPublication,
     save,
     detail,
     remove,
